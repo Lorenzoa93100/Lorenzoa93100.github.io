@@ -1,20 +1,443 @@
-<div id="grid"></div>
-<script>
-const USER = "Lorenzoa93100";
-const TOPIC = "mini-jeu";
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mes mini-jeux</title>
+  <meta name="description" content="Tous mes mini-jeux jouables dans le navigateur.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
-fetch(`https://api.github.com/users/${USER}/repos?per_page=100`)
-  .then(r => r.json())
-  .then(repos => {
+  <style>
+    :root {
+      --bg: #15122b;
+      --bg-glow: #2a1f5c;
+      --surface: #1f1b42;
+      --surface-2: #28235a;
+      --line: #3a3478;
+      --text: #f2efff;
+      --muted: #a9a3d6;
+      --accent: #ffb86b;
+      --radius: 20px;
+      --display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+      --body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { color-scheme: dark; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--body);
+      color: var(--text);
+      background:
+        radial-gradient(900px 500px at 85% -10%, var(--bg-glow), transparent 70%),
+        radial-gradient(700px 400px at -10% 30%, #1d2a5a66, transparent 70%),
+        var(--bg);
+      background-attachment: fixed;
+      line-height: 1.5;
+    }
+
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 4rem 1.5rem 5rem; }
+
+    /* ---------- En-tête ---------- */
+    header { max-width: 640px; margin-bottom: 2.5rem; }
+
+    h1 {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: clamp(2.6rem, 7vw, 4.6rem);
+      line-height: 1;
+      letter-spacing: -0.03em;
+      margin: 0 0 1rem;
+    }
+
+    .lead { color: var(--muted); font-size: 1.1rem; margin: 0; max-width: 46ch; }
+
+    /* ---------- Barre d'outils ---------- */
+    .tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .search {
+      flex: 1 1 260px;
+      position: relative;
+    }
+
+    .search svg {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      width: 18px; height: 18px; color: var(--muted); pointer-events: none;
+    }
+
+    input[type="search"] {
+      width: 100%;
+      font: inherit;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: .75rem 1rem .75rem 2.7rem;
+    }
+
+    input[type="search"]::placeholder { color: var(--muted); }
+
+    .sorts { display: flex; gap: .4rem; }
+
+    .sorts button {
+      font: inherit;
+      font-weight: 500;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: .65rem 1.1rem;
+      cursor: pointer;
+    }
+
+    .sorts button:hover { color: var(--text); border-color: var(--muted); }
+
+    .sorts button[aria-pressed="true"] {
+      color: #25180a;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .count { color: var(--muted); font-size: .95rem; margin-left: auto; }
+
+    input:focus-visible, button:focus-visible, a:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    /* ---------- Grille ---------- */
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      --h: 260;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .card:hover, .card:focus-within {
+      border-color: hsl(var(--h) 80% 70%);
+      box-shadow: 0 0 0 1px hsl(var(--h) 80% 70% / .6), 0 18px 40px -18px hsl(var(--h) 90% 60% / .55);
+    }
+
+    /* Visuel généré : une teinte unique par jeu */
+    .banner {
+      position: relative;
+      height: 150px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        radial-gradient(120% 140% at 15% 0%, hsl(var(--h) 85% 62%) 0%, transparent 60%),
+        radial-gradient(100% 120% at 100% 100%, hsl(calc(var(--h) + 50) 80% 45%) 0%, transparent 65%),
+        hsl(var(--h) 55% 22%);
+    }
+
+    .banner::before {
+      content: "";
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(hsl(0 0% 100% / .08) 1px, transparent 1px),
+        linear-gradient(90deg, hsl(0 0% 100% / .08) 1px, transparent 1px);
+      background-size: 22px 22px;
+      mask-image: linear-gradient(to bottom, #000 0%, transparent 95%);
+      -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 95%);
+    }
+
+    .banner span {
+      position: relative;
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 5.2rem;
+      line-height: 1;
+      color: hsl(0 0% 100% / .95);
+      text-shadow: 0 6px 24px hsl(var(--h) 80% 15% / .55);
+      user-select: none;
+    }
+
+    .body { padding: 1.2rem 1.3rem 1.3rem; display: flex; flex-direction: column; gap: .6rem; flex: 1; }
+
+    .card h2 {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: -0.01em;
+      line-height: 1.15;
+      margin: 0;
+    }
+
+    .card p { margin: 0; color: var(--muted); font-size: .97rem; flex: 1; }
+    .card p.empty { font-style: italic; opacity: .6; }
+
+    .foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .75rem;
+      margin-top: .6rem;
+      padding-top: .9rem;
+      border-top: 1px solid var(--line);
+      font-size: .88rem;
+      color: var(--muted);
+    }
+
+    /* Le lien « Jouer » couvre toute la carte */
+    a.play {
+      color: var(--text);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    a.play::after { content: ""; position: absolute; inset: 0; }
+
+    a.play .btn {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: hsl(var(--h) 85% 68%);
+      color: hsl(var(--h) 60% 12%);
+      padding: .5rem 1rem;
+      border-radius: 999px;
+    }
+
+    a.repo {
+      position: relative; z-index: 1;
+      color: var(--muted);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    a.repo:hover { color: var(--text); }
+
+    /* ---------- Chargement / états ---------- */
+    .skeleton {
+      height: 300px;
+      border-radius: var(--radius);
+      background: linear-gradient(100deg, var(--surface) 30%, var(--surface-2) 50%, var(--surface) 70%);
+      background-size: 300% 100%;
+      animation: shimmer 1.4s linear infinite;
+    }
+
+    @keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+    .message {
+      grid-column: 1 / -1;
+      background: var(--surface);
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      padding: 2rem;
+      color: var(--muted);
+    }
+
+    .message strong { color: var(--text); display: block; font-size: 1.1rem; margin-bottom: .3rem; }
+    .message code { background: var(--surface-2); padding: .1rem .4rem; border-radius: 6px; color: var(--text); }
+
+    /* Apparition d'ensemble au chargement */
+    .card { animation: rise .5s ease both; animation-delay: calc(var(--i, 0) * 50ms); }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+    footer { margin-top: 4rem; color: var(--muted); font-size: .9rem; }
+    footer a { color: var(--muted); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card, .skeleton { animation: none; }
+      .card { transition: none; }
+    }
+
+    @media (max-width: 520px) {
+      .wrap { padding-top: 2.5rem; }
+      .count { margin-left: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Mes mini-jeux</h1>
+      <p class="lead">Tous mes petits jeux, jouables directement dans le navigateur. Clique sur une carte pour lancer la partie.</p>
+    </header>
+
+    <div class="tools">
+      <label class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Rechercher un jeu" aria-label="Rechercher un jeu" autocomplete="off">
+      </label>
+      <div class="sorts" role="group" aria-label="Trier les jeux">
+        <button type="button" data-sort="recent" aria-pressed="true">Récents</button>
+        <button type="button" data-sort="az" aria-pressed="false">A → Z</button>
+      </div>
+      <span class="count" id="count" aria-live="polite"></span>
+    </div>
+
+    <main id="grid" aria-busy="true">
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+    </main>
+
+    <footer>
+      <a href="https://github.com/Lorenzoa93100" rel="noopener">Mon profil GitHub</a>
+    </footer>
+  </div>
+
+  <script>
+    /* ========== RÉGLAGES ========== */
+    const USER = "Lorenzoa93100";
+    // Topic GitHub qui marque un dépôt comme jeu.
+    // Mets null pour afficher tous les dépôts qui ont GitHub Pages activé.
+    const TOPIC = "mini-jeu";
+    /* ============================== */
+
     const grid = document.getElementById("grid");
-    repos
-      .filter(r => r.topics && r.topics.includes(TOPIC))
-      .forEach(r => {
-        const a = document.createElement("a");
-        a.className = "card";
-        a.href = `https://${USER}.github.io/${r.name}/`;
-        a.innerHTML = `<h2>${r.name}</h2><p>${r.description || ""}</p>`;
-        grid.appendChild(a);
+    const countEl = document.getElementById("count");
+    const input = document.getElementById("q");
+    const sortButtons = document.querySelectorAll(".sorts button");
+    const ROOT_REPO = `${USER}.github.io`.toLowerCase();
+    const CACHE_KEY = "games-cache-v1";
+    const CACHE_MS = 10 * 60 * 1000; // évite la limite de 60 requêtes/heure de l'API
+
+    let games = [];
+    let sortMode = "recent";
+
+    const esc = s => String(s ?? "").replace(/[&<>"']/g, c => (
+      { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+    ));
+
+    const prettify = name => {
+      const t = name.replace(/[_-]+/g, " ").trim();
+      return t.charAt(0).toUpperCase() + t.slice(1);
+    };
+
+    // Teinte stable, propre à chaque nom de dépôt
+    const hueOf = name => {
+      let h = 0;
+      for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) % 360;
+      return h;
+    };
+
+    const rtf = new Intl.RelativeTimeFormat("fr", { numeric: "auto" });
+    const ago = iso => {
+      const days = Math.round((new Date(iso) - Date.now()) / 86400000);
+      if (Math.abs(days) < 1) return "aujourd’hui";
+      if (Math.abs(days) < 30) return rtf.format(days, "day");
+      if (Math.abs(days) < 365) return rtf.format(Math.round(days / 30), "month");
+      return rtf.format(Math.round(days / 365), "year");
+    };
+
+    function readCache() {
+      try {
+        const c = JSON.parse(sessionStorage.getItem(CACHE_KEY));
+        if (c && Date.now() - c.t < CACHE_MS) return c.data;
+      } catch (e) {}
+      return null;
+    }
+
+    function writeCache(data) {
+      try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data })); } catch (e) {}
+    }
+
+    async function loadRepos() {
+      const cached = readCache();
+      if (cached) return cached;
+
+      const res = await fetch(`https://api.github.com/users/${USER}/repos?per_page=100&sort=pushed`);
+      if (!res.ok) {
+        throw new Error(res.status === 403
+          ? "La limite de requêtes GitHub est atteinte. Réessaie dans quelques minutes."
+          : `GitHub a répondu avec l’erreur ${res.status}.`);
+      }
+      const data = await res.json();
+      writeCache(data);
+      return data;
+    }
+
+    function message(title, text) {
+      grid.innerHTML = `<div class="message"><strong>${title}</strong>${text}</div>`;
+      grid.setAttribute("aria-busy", "false");
+    }
+
+    function render() {
+      const q = input.value.trim().toLowerCase();
+
+      const list = games
+        .filter(g => !q || g.name.toLowerCase().includes(q) || (g.description || "").toLowerCase().includes(q))
+        .sort((a, b) => sortMode === "az"
+          ? a.name.localeCompare(b.name, "fr", { sensitivity: "base" })
+          : new Date(b.pushed_at) - new Date(a.pushed_at));
+
+      countEl.textContent = `${list.length} jeu${list.length > 1 ? "x" : ""}`;
+
+      if (list.length === 0) {
+        message("Aucun jeu trouvé", q
+          ? "Essaie un autre mot-clé."
+          : TOPIC
+            ? `Ajoute le topic <code>${esc(TOPIC)}</code> à un dépôt (roue crantée à côté d’About) pour qu’il apparaisse ici.`
+            : "Aucun dépôt avec GitHub Pages activé.");
+        return;
+      }
+
+      grid.innerHTML = list.map((g, i) => {
+        const url = `https://${USER.toLowerCase()}.github.io/${encodeURIComponent(g.name)}/`;
+        const title = prettify(g.name);
+        return `
+          <article class="card" style="--h:${hueOf(g.name)}; --i:${Math.min(i, 8)}">
+            <div class="banner" aria-hidden="true"><span>${esc(title.charAt(0))}</span></div>
+            <div class="body">
+              <h2>${esc(title)}</h2>
+              ${g.description ? `<p>${esc(g.description)}</p>` : `<p class="empty">Pas encore de description.</p>`}
+              <div class="foot">
+                <a class="play" href="${url}" aria-label="Jouer à ${esc(title)}"><span class="btn">Jouer</span></a>
+                <span>
+                  <a class="repo" href="${esc(g.html_url)}" rel="noopener">Code</a>
+                  · ${ago(g.pushed_at)}
+                </span>
+              </div>
+            </div>
+          </article>`;
+      }).join("");
+      grid.setAttribute("aria-busy", "false");
+    }
+
+    input.addEventListener("input", render);
+
+    sortButtons.forEach(btn => btn.addEventListener("click", () => {
+      sortMode = btn.dataset.sort;
+      sortButtons.forEach(b => b.setAttribute("aria-pressed", String(b === btn)));
+      render();
+    }));
+
+    loadRepos()
+      .then(repos => {
+        games = repos.filter(r =>
+          !r.fork &&
+          r.name.toLowerCase() !== ROOT_REPO &&
+          (TOPIC ? (r.topics || []).includes(TOPIC) : r.has_pages)
+        );
+        render();
+      })
+      .catch(err => {
+        countEl.textContent = "";
+        message("Impossible de charger les jeux", esc(err.message));
       });
-  });
-</script>
+  </script>
+</body>
+</html>
