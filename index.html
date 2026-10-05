@@ -1,0 +1,20 @@
+<div id="grid"></div>
+<script>
+const USER = "Lorenzoa93100";
+const TOPIC = "mini-jeu";
+
+fetch(`https://api.github.com/users/${USER}/repos?per_page=100`)
+  .then(r => r.json())
+  .then(repos => {
+    const grid = document.getElementById("grid");
+    repos
+      .filter(r => r.topics && r.topics.includes(TOPIC))
+      .forEach(r => {
+        const a = document.createElement("a");
+        a.className = "card";
+        a.href = `https://${USER}.github.io/${r.name}/`;
+        a.innerHTML = `<h2>${r.name}</h2><p>${r.description || ""}</p>`;
+        grid.appendChild(a);
+      });
+  });
+</script>
