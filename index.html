@@ -599,7 +599,13 @@
     // Nom du fichier miniature cherché à la racine de chaque jeu (optionnel).
     // Ajoute un fichier thumbnail.png dans un jeu pour choisir toi-même son image.
     const THUMB = "thumbnail.png";
-    // Sans thumbnail.png, on affiche une capture d'écran automatique du jeu en ligne.
+    // Images choisies à la main, rangées dans le dossier images/ de ce site (nom du dépôt → fichier).
+    // Elles passent avant tout le reste.
+    const IMAGES = {
+      sudoku: "images/sudoku.png",
+      casino: "images/casino.png",
+    };
+    // Sans image ni thumbnail.png, on affiche une capture d'écran automatique du jeu en ligne.
     // Mets false pour garder la bannière avec la lettre à la place.
     const AUTO_SCREENSHOT = true;
     const SHOT_W = 640, SHOT_H = 400;
@@ -769,7 +775,7 @@
             <div class="banner" aria-hidden="true">
               ${isNew ? `<span class="badge">Nouveau</span>` : ""}
               <span>${esc(title.charAt(0))}</span>
-              <img src="${esc(url)}${esc(THUMB)}" data-page="${esc(url)}" alt="" loading="lazy" decoding="async">
+              <img src="${esc(IMAGES[g.name.toLowerCase()] || url + THUMB)}" data-page="${esc(url)}" alt="" loading="lazy" decoding="async">
             </div>
             <div class="body">
               <h2>${esc(title)}</h2>
