@@ -5,58 +5,205 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mes mini-jeux</title>
   <meta name="description" content="Tous mes mini-jeux jouables dans le navigateur.">
+  <meta name="theme-color" content="#07060f">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Mes mini-jeux">
+  <meta property="og:description" content="Tous mes mini-jeux jouables dans le navigateur.">
+  <meta property="og:url" content="https://lorenzoa93100.github.io/">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="https://lorenzoa93100.github.io/">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://api.github.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #15122b;
-      --bg-glow: #2a1f5c;
-      --surface: #1f1b42;
-      --surface-2: #28235a;
-      --line: #3a3478;
-      --text: #f2efff;
-      --muted: #a9a3d6;
-      --accent: #ffb86b;
-      --radius: 20px;
+      --bg: #07060f;
+      --surface: #14112b;
+      --surface-2: #1e1a3d;
+      --glass: linear-gradient(180deg, rgb(255 255 255 / .07), rgb(255 255 255 / .02));
+      --line: rgb(255 255 255 / .11);
+      --text: #f7f5ff;
+      --muted: #a09bc8;
+      --accent: #c8ff5c;
+      --accent-ink: #14210a;
+      --radius: 24px;
       --display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
       --body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
     }
 
     * { box-sizing: border-box; }
-
-    html { color-scheme: dark; }
+    html { color-scheme: dark; scroll-behavior: smooth; }
 
     body {
       margin: 0;
       min-height: 100vh;
       font-family: var(--body);
       color: var(--text);
-      background:
-        radial-gradient(900px 500px at 85% -10%, var(--bg-glow), transparent 70%),
-        radial-gradient(700px 400px at -10% 30%, #1d2a5a66, transparent 70%),
-        var(--bg);
-      background-attachment: fixed;
+      background: var(--bg);
       line-height: 1.5;
     }
 
-    .wrap { max-width: 1120px; margin: 0 auto; padding: 4rem 1.5rem 5rem; }
+    /* Aurore animée en arrière-plan */
+    body::before {
+      content: "";
+      position: fixed; inset: -25%;
+      z-index: -2;
+      background:
+        radial-gradient(38% 38% at 18% 22%, #7c3aed66, transparent 70%),
+        radial-gradient(34% 34% at 82% 12%, #ff3d8155, transparent 70%),
+        radial-gradient(40% 40% at 72% 88%, #06b6d444, transparent 70%),
+        radial-gradient(30% 30% at 8% 80%, #c8ff5c22, transparent 70%);
+      filter: blur(50px);
+      animation: drift 28s ease-in-out infinite alternate;
+    }
+
+    /* Fin grain pour donner de la matière */
+    body::after {
+      content: "";
+      position: fixed; inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: .07;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+
+    @keyframes drift {
+      from { transform: translate3d(-3%, -2%, 0) rotate(0deg) scale(1); }
+      to   { transform: translate3d(4%, 3%, 0) rotate(8deg) scale(1.12); }
+    }
+
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 4.5rem 1.5rem 5rem; }
 
     /* ---------- En-tête ---------- */
-    header { max-width: 640px; margin-bottom: 2.5rem; }
+    /* Bannière animée */
+    .hero {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      margin: 0 0 2.5rem;
+      min-height: 340px;
+      padding: clamp(2.2rem, 6vw, 4rem) clamp(1.4rem, 5vw, 3.5rem);
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 32px;
+      background: linear-gradient(135deg, #1a1244 0%, #0d0a24 70%);
+      box-shadow: 0 30px 80px -40px rgb(124 58 237 / .7);
+    }
+
+    /* Nappes de couleur qui dérivent en fond */
+    .hero::before {
+      content: "";
+      position: absolute; inset: -40%;
+      z-index: -1;
+      background:
+        radial-gradient(30% 30% at 25% 30%, #7c3aed99, transparent 70%),
+        radial-gradient(28% 28% at 75% 25%, #ff3d8177, transparent 70%),
+        radial-gradient(30% 30% at 60% 80%, #06b6d466, transparent 70%);
+      filter: blur(30px);
+      animation: hero-drift 16s ease-in-out infinite alternate;
+    }
+
+    @keyframes hero-drift {
+      from { transform: translate3d(-6%, -4%, 0) rotate(0deg) scale(1); }
+      to   { transform: translate3d(6%, 5%, 0) rotate(14deg) scale(1.15); }
+    }
+
+    /* Sol en perspective qui défile */
+    .hero-grid {
+      position: absolute;
+      left: -30%; right: -30%; bottom: -8%;
+      height: 62%;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgb(200 255 92 / .38) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(200 255 92 / .38) 1px, transparent 1px);
+      background-size: 52px 52px;
+      transform: perspective(380px) rotateX(64deg);
+      transform-origin: 50% 100%;
+      -webkit-mask-image: linear-gradient(to top, #000 8%, transparent 92%);
+      mask-image: linear-gradient(to top, #000 8%, transparent 92%);
+      animation: grid-run 2.2s linear infinite;
+    }
+
+    @keyframes grid-run {
+      from { background-position: 0 0, 0 0; }
+      to   { background-position: 0 52px, 0 0; }
+    }
+
+    /* Soleil rétro à rayures */
+    .hero-sun {
+      position: absolute;
+      right: 7%; top: 14%;
+      width: clamp(120px, 20vw, 220px);
+      aspect-ratio: 1;
+      z-index: 0;
+      pointer-events: none;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #ffd86b 0%, #ff7ab8 55%, #b794ff 100%);
+      -webkit-mask-image: linear-gradient(#000 0 52%, transparent 52% 57%, #000 57% 66%, transparent 66% 73%, #000 73% 83%, transparent 83% 91%, #000 91%);
+      mask-image: linear-gradient(#000 0 52%, transparent 52% 57%, #000 57% 66%, transparent 66% 73%, #000 73% 83%, transparent 83% 91%, #000 91%);
+      filter: drop-shadow(0 0 40px rgb(255 122 184 / .6));
+      opacity: .9;
+      animation: sun-float 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes sun-float {
+      from { transform: translateY(-8px) scale(1); }
+      to   { transform: translateY(10px) scale(1.04); }
+    }
+
+    #heroCanvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .hero-inner { position: relative; z-index: 2; max-width: 640px; }
+    .hero-inner h1 { margin-bottom: 1rem; }
+
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: .55rem;
+      margin: 0 0 1.4rem;
+      padding: .4rem .9rem;
+      font-size: .78rem; font-weight: 600;
+      letter-spacing: .16em; text-transform: uppercase;
+      color: var(--accent);
+      background: rgb(200 255 92 / .07);
+      border: 1px solid rgb(200 255 92 / .28);
+      border-radius: 999px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse { 50% { opacity: .35; transform: scale(.8); } }
 
     h1 {
       font-family: var(--display);
       font-weight: 800;
-      font-size: clamp(2.6rem, 7vw, 4.6rem);
-      line-height: 1;
-      letter-spacing: -0.03em;
-      margin: 0 0 1rem;
+      font-size: clamp(2.8rem, 8vw, 5.2rem);
+      line-height: .98;
+      letter-spacing: -0.035em;
+      margin: 0 0 1.2rem;
+      background: linear-gradient(95deg, #ffffff 5%, #ffc2e2 40%, #8ff0ff 85%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
 
-    .lead { color: var(--muted); font-size: 1.1rem; margin: 0; max-width: 46ch; }
+    .lead { color: var(--muted); font-size: 1.12rem; margin: 0; max-width: 46ch; }
 
     /* ---------- Barre d'outils ---------- */
     .tools {
@@ -64,53 +211,87 @@
       flex-wrap: wrap;
       gap: .75rem;
       align-items: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
     }
 
-    .search {
-      flex: 1 1 260px;
-      position: relative;
-    }
+    .search { flex: 1 1 260px; position: relative; }
 
     .search svg {
-      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
       width: 18px; height: 18px; color: var(--muted); pointer-events: none;
     }
+
+    .search kbd {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      font: 600 .78rem var(--body);
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: .1rem .5rem;
+      pointer-events: none;
+    }
+
+    .search:focus-within kbd { display: none; }
 
     input[type="search"] {
       width: 100%;
       font: inherit;
       color: var(--text);
-      background: var(--surface);
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border: 1px solid var(--line);
       border-radius: 999px;
-      padding: .75rem 1rem .75rem 2.7rem;
+      padding: .8rem 2.8rem .8rem 2.8rem;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    input[type="search"]:focus {
+      outline: none;
+      border-color: rgb(200 255 92 / .6);
+      box-shadow: 0 0 0 4px rgb(200 255 92 / .12);
     }
 
     input[type="search"]::placeholder { color: var(--muted); }
 
-    .sorts { display: flex; gap: .4rem; }
+    .sorts {
+      display: flex; gap: .2rem;
+      padding: 4px;
+      background: var(--glass);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
 
-    .sorts button {
+    .sorts button, .chip {
       font: inherit;
       font-weight: 500;
       color: var(--muted);
       background: transparent;
-      border: 1px solid var(--line);
+      border: 1px solid transparent;
       border-radius: 999px;
-      padding: .65rem 1.1rem;
+      padding: .55rem 1.1rem;
       cursor: pointer;
+      transition: color .15s, background .15s, border-color .15s, box-shadow .15s;
     }
 
-    .sorts button:hover { color: var(--text); border-color: var(--muted); }
+    .sorts button:hover, .chip:hover { color: var(--text); }
 
-    .sorts button[aria-pressed="true"] {
-      color: #25180a;
+    .sorts button[aria-pressed="true"],
+    .chip[aria-pressed="true"] {
+      color: var(--accent-ink);
       background: var(--accent);
-      border-color: var(--accent);
+      font-weight: 600;
+      box-shadow: 0 6px 20px -6px rgb(200 255 92 / .6);
     }
 
     .count { color: var(--muted); font-size: .95rem; margin-left: auto; }
+
+    /* Filtres par tag */
+    .chips { display: flex; flex-wrap: wrap; gap: .45rem; margin-bottom: 2.2rem; }
+    .chip { padding: .35rem .9rem; font-size: .88rem; border-color: var(--line); }
+    .chip[aria-pressed="true"] { border-color: var(--accent); }
 
     input:focus-visible, button:focus-visible, a:focus-visible {
       outline: 3px solid var(--accent);
@@ -121,7 +302,7 @@
     #grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-      gap: 1.5rem;
+      gap: 1.6rem;
     }
 
     .card {
@@ -129,111 +310,179 @@
       position: relative;
       display: flex;
       flex-direction: column;
-      background: var(--surface);
+      background: var(--glass), rgb(20 17 43 / .72);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       border: 1px solid var(--line);
       border-radius: var(--radius);
       overflow: hidden;
-      transition: border-color .2s, box-shadow .2s;
+      transition: border-color .25s, box-shadow .25s, transform .25s;
     }
 
     .card:hover, .card:focus-within {
-      border-color: hsl(var(--h) 80% 70%);
-      box-shadow: 0 0 0 1px hsl(var(--h) 80% 70% / .6), 0 18px 40px -18px hsl(var(--h) 90% 60% / .55);
+      transform: translateY(-6px);
+      border-color: hsl(var(--h) 95% 72% / .75);
+      box-shadow:
+        0 0 0 1px hsl(var(--h) 95% 72% / .35),
+        0 24px 50px -20px hsl(var(--h) 95% 60% / .65),
+        0 0 80px -30px hsl(calc(var(--h) + 60) 95% 60% / .5);
     }
 
-    /* Visuel généré : une teinte unique par jeu */
+    /* Visuel : miniature du jeu si elle existe, sinon bannière générée */
     .banner {
       position: relative;
-      height: 150px;
+      height: 160px;
       display: grid;
       place-items: center;
       overflow: hidden;
       background:
-        radial-gradient(120% 140% at 15% 0%, hsl(var(--h) 85% 62%) 0%, transparent 60%),
-        radial-gradient(100% 120% at 100% 100%, hsl(calc(var(--h) + 50) 80% 45%) 0%, transparent 65%),
-        hsl(var(--h) 55% 22%);
+        radial-gradient(90% 130% at 10% 0%, hsl(var(--h) 95% 60%) 0%, transparent 60%),
+        radial-gradient(80% 110% at 100% 100%, hsl(calc(var(--h) + 60) 95% 55%) 0%, transparent 65%),
+        hsl(calc(var(--h) + 20) 60% 14%);
     }
 
     .banner::before {
       content: "";
       position: absolute; inset: 0;
       background-image:
-        linear-gradient(hsl(0 0% 100% / .08) 1px, transparent 1px),
-        linear-gradient(90deg, hsl(0 0% 100% / .08) 1px, transparent 1px);
-      background-size: 22px 22px;
+        linear-gradient(rgb(255 255 255 / .1) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(255 255 255 / .1) 1px, transparent 1px);
+      background-size: 24px 24px;
       mask-image: linear-gradient(to bottom, #000 0%, transparent 95%);
       -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 95%);
     }
+
+    /* Reflet qui traverse la bannière au survol */
+    .banner::after {
+      content: "";
+      position: absolute; inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      background: linear-gradient(115deg, transparent 38%, rgb(255 255 255 / .28) 50%, transparent 62%);
+      transform: translateX(-110%);
+      transition: transform .8s ease;
+    }
+
+    .card:hover .banner::after { transform: translateX(110%); }
 
     .banner span {
       position: relative;
       font-family: var(--display);
       font-weight: 800;
-      font-size: 5.2rem;
+      font-size: 5.4rem;
       line-height: 1;
-      color: hsl(0 0% 100% / .95);
-      text-shadow: 0 6px 24px hsl(var(--h) 80% 15% / .55);
+      color: rgb(255 255 255 / .96);
+      text-shadow: 0 8px 28px hsl(var(--h) 90% 12% / .6);
       user-select: none;
+      transition: transform .35s cubic-bezier(.2, .9, .3, 1.4);
     }
 
-    .body { padding: 1.2rem 1.3rem 1.3rem; display: flex; flex-direction: column; gap: .6rem; flex: 1; }
+    .card:hover .banner span { transform: scale(1.12) rotate(-4deg); }
+
+    .banner img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: 1;
+      transition: transform .5s ease;
+    }
+
+    .card:hover .banner img { transform: scale(1.06); }
+
+    .banner span.badge {
+      position: absolute; top: .85rem; left: .85rem; z-index: 2;
+      font-family: var(--body);
+      font-size: .72rem; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+      line-height: 1;
+      color: var(--accent-ink);
+      background: var(--accent);
+      text-shadow: none;
+      padding: .35rem .65rem;
+      border-radius: 999px;
+      box-shadow: 0 6px 16px -4px rgb(200 255 92 / .6);
+    }
+
+    .card:hover .banner span.badge { transform: none; }
+
+    .body { padding: 1.3rem 1.4rem 1.4rem; display: flex; flex-direction: column; gap: .65rem; flex: 1; }
 
     .card h2 {
       font-family: var(--display);
       font-weight: 800;
-      font-size: 1.4rem;
-      letter-spacing: -0.01em;
-      line-height: 1.15;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      line-height: 1.12;
       margin: 0;
     }
 
     .card p { margin: 0; color: var(--muted); font-size: .97rem; flex: 1; }
-    .card p.empty { font-style: italic; opacity: .6; }
+    .card p.empty { font-style: italic; opacity: .55; }
+
+    .tags { display: flex; flex-wrap: wrap; gap: .35rem; }
+    .tag {
+      font-size: .76rem;
+      color: hsl(var(--h) 90% 82%);
+      background: hsl(var(--h) 70% 50% / .14);
+      border: 1px solid hsl(var(--h) 80% 65% / .25);
+      border-radius: 999px;
+      padding: .15rem .65rem;
+    }
 
     .foot {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: .75rem;
-      margin-top: .6rem;
-      padding-top: .9rem;
+      margin-top: .7rem;
+      padding-top: 1rem;
       border-top: 1px solid var(--line);
       font-size: .88rem;
       color: var(--muted);
     }
 
     /* Le lien « Jouer » couvre toute la carte */
-    a.play {
-      color: var(--text);
-      font-weight: 600;
-      text-decoration: none;
-    }
-
-    a.play::after { content: ""; position: absolute; inset: 0; }
+    a.play { color: var(--text); font-weight: 600; text-decoration: none; }
+    a.play::after { content: ""; position: absolute; inset: 0; z-index: 0; }
 
     a.play .btn {
-      display: inline-flex; align-items: center; gap: .4rem;
-      background: hsl(var(--h) 85% 68%);
-      color: hsl(var(--h) 60% 12%);
-      padding: .5rem 1rem;
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: linear-gradient(135deg, hsl(var(--h) 95% 72%), hsl(calc(var(--h) + 45) 95% 66%));
+      color: hsl(var(--h) 70% 10%);
+      font-weight: 700;
+      padding: .55rem 1.1rem;
       border-radius: 999px;
+      box-shadow: 0 8px 22px -8px hsl(var(--h) 95% 60% / .8);
+      transition: box-shadow .25s, filter .25s;
     }
+
+    a.play .btn::after {
+      content: "→";
+      display: inline-block;
+      transition: transform .25s;
+    }
+
+    .card:hover a.play .btn { filter: brightness(1.08); box-shadow: 0 12px 28px -8px hsl(var(--h) 95% 60%); }
+    .card:hover a.play .btn::after { transform: translateX(4px); }
 
     a.repo {
       position: relative; z-index: 1;
       color: var(--muted);
       text-decoration: underline;
+      text-decoration-color: rgb(255 255 255 / .25);
       text-underline-offset: 3px;
+      transition: color .15s;
     }
 
     a.repo:hover { color: var(--text); }
 
     /* ---------- Chargement / états ---------- */
     .skeleton {
-      height: 300px;
+      height: 330px;
       border-radius: var(--radius);
       background: linear-gradient(100deg, var(--surface) 30%, var(--surface-2) 50%, var(--surface) 70%);
       background-size: 300% 100%;
+      border: 1px solid var(--line);
       animation: shimmer 1.4s linear infinite;
     }
 
@@ -241,45 +490,77 @@
 
     .message {
       grid-column: 1 / -1;
-      background: var(--surface);
-      border: 1px dashed var(--line);
+      background: var(--glass);
+      border: 1px dashed rgb(255 255 255 / .2);
       border-radius: var(--radius);
-      padding: 2rem;
+      padding: 2.2rem;
       color: var(--muted);
     }
 
-    .message strong { color: var(--text); display: block; font-size: 1.1rem; margin-bottom: .3rem; }
-    .message code { background: var(--surface-2); padding: .1rem .4rem; border-radius: 6px; color: var(--text); }
+    .message strong { color: var(--text); display: block; font-size: 1.15rem; margin-bottom: .3rem; font-family: var(--display); }
+    .message code { background: var(--surface-2); padding: .1rem .45rem; border-radius: 6px; color: var(--accent); }
+    .message button {
+      margin-top: 1rem;
+      font: inherit; font-weight: 700;
+      background: var(--accent); color: var(--accent-ink);
+      border: 0; border-radius: 999px;
+      padding: .65rem 1.3rem; cursor: pointer;
+    }
+
+    .hint {
+      margin: 0 0 1.5rem;
+      padding: .9rem 1.2rem;
+      border: 1px dashed rgb(255 255 255 / .2);
+      border-radius: 16px;
+      background: rgb(255 255 255 / .03);
+      color: var(--muted);
+      font-size: .92rem;
+    }
+    .hint code { background: var(--surface-2); padding: .1rem .45rem; border-radius: 6px; color: var(--accent); }
 
     /* Apparition d'ensemble au chargement */
-    .card { animation: rise .5s ease both; animation-delay: calc(var(--i, 0) * 50ms); }
-    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    .card { animation: rise .6s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i, 0) * 60ms); }
+    @keyframes rise { from { opacity: 0; transform: translateY(20px) scale(.98); } to { opacity: 1; transform: none; } }
 
-    footer { margin-top: 4rem; color: var(--muted); font-size: .9rem; }
-    footer a { color: var(--muted); }
+    footer { margin-top: 4.5rem; color: var(--muted); font-size: .9rem; }
+    footer a { color: var(--muted); transition: color .15s; }
+    footer a:hover { color: var(--accent); }
 
     @media (prefers-reduced-motion: reduce) {
-      .card, .skeleton { animation: none; }
-      .card { transition: none; }
+      html { scroll-behavior: auto; }
+      body::before, .eyebrow::before, .card, .skeleton,
+      .hero::before, .hero-grid, .hero-sun { animation: none; }
+      .card, .banner::after, .banner span, .banner img { transition: none; }
+      .card:hover, .card:focus-within { transform: none; }
     }
 
     @media (max-width: 520px) {
       .wrap { padding-top: 2.5rem; }
       .count { margin-left: 0; width: 100%; }
+      .search kbd { display: none; }
+      .hero { min-height: 300px; border-radius: 24px; }
+      .hero-sun { right: -6%; top: 6%; opacity: .55; }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <header>
-      <h1>Mes mini-jeux</h1>
-      <p class="lead">Tous mes petits jeux, jouables directement dans le navigateur. Clique sur une carte pour lancer la partie.</p>
+    <header class="hero">
+      <div class="hero-sun" aria-hidden="true"></div>
+      <div class="hero-grid" aria-hidden="true"></div>
+      <canvas id="heroCanvas" aria-hidden="true"></canvas>
+      <div class="hero-inner">
+        <p class="eyebrow">Arcade perso</p>
+        <h1>Mes mini-jeux</h1>
+        <p class="lead">Tous mes petits jeux, jouables directement dans le navigateur. Clique sur une carte pour lancer la partie.</p>
+      </div>
     </header>
 
     <div class="tools">
       <label class="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         <input id="q" type="search" placeholder="Rechercher un jeu" aria-label="Rechercher un jeu" autocomplete="off">
+        <kbd aria-hidden="true">/</kbd>
       </label>
       <div class="sorts" role="group" aria-label="Trier les jeux">
         <button type="button" data-sort="recent" aria-pressed="true">Récents</button>
@@ -288,11 +569,17 @@
       <span class="count" id="count" aria-live="polite"></span>
     </div>
 
+    <div class="chips" id="chips" role="group" aria-label="Filtrer par catégorie" hidden></div>
+
     <main id="grid" aria-busy="true">
       <div class="skeleton"></div>
       <div class="skeleton"></div>
       <div class="skeleton"></div>
     </main>
+
+    <noscript>
+      <p class="hint">JavaScript est nécessaire pour afficher la liste des jeux. Tu peux aussi les retrouver sur <a href="https://github.com/Lorenzoa93100">mon profil GitHub</a>.</p>
+    </noscript>
 
     <footer>
       <a href="https://github.com/Lorenzoa93100" rel="noopener">Mon profil GitHub</a>
@@ -303,20 +590,27 @@
     /* ========== RÉGLAGES ========== */
     const USER = "Lorenzoa93100";
     // Topic GitHub qui marque un dépôt comme jeu.
-    // Mets null pour afficher tous les dépôts qui ont GitHub Pages activé.
+    // Si aucun dépôt n'a ce topic, la page affiche tous les dépôts avec GitHub Pages.
+    // Mets null pour toujours afficher tous les dépôts avec GitHub Pages.
     const TOPIC = "mini-jeu";
+    // Nom du fichier miniature cherché à la racine de chaque jeu (optionnel).
+    // Ajoute un fichier thumbnail.png dans un jeu pour remplacer la bannière générée.
+    const THUMB = "thumbnail.png";
+    // Un jeu modifié depuis moins de N jours reçoit le badge « Nouveau ».
+    const NEW_DAYS = 14;
     /* ============================== */
 
-    const grid = document.getElementById("grid");
-    const countEl = document.getElementById("count");
-    const input = document.getElementById("q");
+    const $ = id => document.getElementById(id);
+    const grid = $("grid"), countEl = $("count"), input = $("q"), chipsEl = $("chips");
     const sortButtons = document.querySelectorAll(".sorts button");
     const ROOT_REPO = `${USER}.github.io`.toLowerCase();
-    const CACHE_KEY = "games-cache-v1";
-    const CACHE_MS = 10 * 60 * 1000; // évite la limite de 60 requêtes/heure de l'API
+    const CACHE_KEY = "games-cache-v2";
+    const CACHE_MS = 10 * 60 * 1000; // évite la limite de 60 requêtes/heure de l'API GitHub
 
     let games = [];
+    let usingFallback = false;
     let sortMode = "recent";
+    let activeTag = null;
 
     const esc = s => String(s ?? "").replace(/[&<>"']/g, c => (
       { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
@@ -327,12 +621,13 @@
       return t.charAt(0).toUpperCase() + t.slice(1);
     };
 
-    // Teinte stable, propre à chaque nom de dépôt
     const hueOf = name => {
       let h = 0;
       for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) % 360;
       return h;
     };
+
+    const daysSince = iso => (Date.now() - new Date(iso)) / 86400000;
 
     const rtf = new Intl.RelativeTimeFormat("fr", { numeric: "auto" });
     const ago = iso => {
@@ -343,23 +638,23 @@
       return rtf.format(Math.round(days / 365), "year");
     };
 
+    /* ---------- Cache (localStorage, avec repli silencieux) ---------- */
     function readCache() {
       try {
-        const c = JSON.parse(sessionStorage.getItem(CACHE_KEY));
-        if (c && Date.now() - c.t < CACHE_MS) return c.data;
+        const c = JSON.parse(localStorage.getItem(CACHE_KEY));
+        if (c && Array.isArray(c.data)) return c;
       } catch (e) {}
       return null;
     }
 
     function writeCache(data) {
-      try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data })); } catch (e) {}
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data })); } catch (e) {}
     }
 
-    async function loadRepos() {
-      const cached = readCache();
-      if (cached) return cached;
-
-      const res = await fetch(`https://api.github.com/users/${USER}/repos?per_page=100&sort=pushed`);
+    async function fetchRepos() {
+      const res = await fetch(`https://api.github.com/users/${USER}/repos?per_page=100&sort=pushed`, {
+        headers: { Accept: "application/vnd.github+json" }
+      });
       if (!res.ok) {
         throw new Error(res.status === 403
           ? "La limite de requêtes GitHub est atteinte. Réessaie dans quelques minutes."
@@ -370,16 +665,74 @@
       return data;
     }
 
-    function message(title, text) {
-      grid.innerHTML = `<div class="message"><strong>${title}</strong>${text}</div>`;
+    /* ---------- Sélection des jeux ---------- */
+    function pickGames(repos) {
+      const base = repos.filter(r =>
+        !r.fork && !r.archived && !r.disabled &&
+        r.name.toLowerCase() !== ROOT_REPO
+      );
+      if (!TOPIC) { usingFallback = false; return base.filter(r => r.has_pages); }
+      const tagged = base.filter(r => (r.topics || []).includes(TOPIC));
+      if (tagged.length) { usingFallback = false; return tagged; }
+      usingFallback = true;
+      return base.filter(r => r.has_pages);
+    }
+
+    const gameUrl = g => {
+      if (g.homepage && /^https?:\/\//.test(g.homepage)) return g.homepage;
+      return `https://${USER.toLowerCase()}.github.io/${encodeURIComponent(g.name)}/`;
+    };
+
+    /* ---------- État dans l'URL (#q=…&tag=…&sort=…) ---------- */
+    function readHash() {
+      const p = new URLSearchParams(location.hash.slice(1));
+      input.value = p.get("q") || "";
+      activeTag = p.get("tag") || null;
+      sortMode = p.get("sort") === "az" ? "az" : "recent";
+      sortButtons.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.sort === sortMode)));
+    }
+
+    function writeHash() {
+      const p = new URLSearchParams();
+      if (input.value.trim()) p.set("q", input.value.trim());
+      if (activeTag) p.set("tag", activeTag);
+      if (sortMode !== "recent") p.set("sort", sortMode);
+      const h = p.toString();
+      history.replaceState(null, "", h ? `#${h}` : location.pathname + location.search);
+    }
+
+    /* ---------- Rendu ---------- */
+    function message(title, text, retry) {
+      grid.innerHTML = `<div class="message"><strong>${title}</strong>${text}${
+        retry ? `<br><button type="button" id="retry">Réessayer</button>` : ""
+      }</div>`;
       grid.setAttribute("aria-busy", "false");
+      if (retry) $("retry").addEventListener("click", init);
+    }
+
+    function renderChips() {
+      const tags = [...new Set(games.flatMap(g => g.topics || []))]
+        .filter(t => t !== TOPIC)
+        .sort((a, b) => a.localeCompare(b, "fr"));
+
+      chipsEl.hidden = tags.length === 0;
+      if (!tags.length) { chipsEl.innerHTML = ""; return; }
+
+      const mk = (label, value) =>
+        `<button type="button" class="chip" data-tag="${esc(value ?? "")}" aria-pressed="${(activeTag || "") === (value ?? "")}">${esc(label)}</button>`;
+
+      chipsEl.innerHTML = mk("Tous", null) + tags.map(t => mk(t, t)).join("");
     }
 
     function render() {
       const q = input.value.trim().toLowerCase();
 
       const list = games
-        .filter(g => !q || g.name.toLowerCase().includes(q) || (g.description || "").toLowerCase().includes(q))
+        .filter(g => !activeTag || (g.topics || []).includes(activeTag))
+        .filter(g => !q ||
+          g.name.toLowerCase().includes(q) ||
+          prettify(g.name).toLowerCase().includes(q) ||
+          (g.description || "").toLowerCase().includes(q))
         .sort((a, b) => sortMode === "az"
           ? a.name.localeCompare(b.name, "fr", { sensitivity: "base" })
           : new Date(b.pushed_at) - new Date(a.pushed_at));
@@ -387,25 +740,36 @@
       countEl.textContent = `${list.length} jeu${list.length > 1 ? "x" : ""}`;
 
       if (list.length === 0) {
-        message("Aucun jeu trouvé", q
-          ? "Essaie un autre mot-clé."
+        message("Aucun jeu trouvé", q || activeTag
+          ? "Essaie un autre mot-clé ou retire le filtre."
           : TOPIC
             ? `Ajoute le topic <code>${esc(TOPIC)}</code> à un dépôt (roue crantée à côté d’About) pour qu’il apparaisse ici.`
             : "Aucun dépôt avec GitHub Pages activé.");
         return;
       }
 
-      grid.innerHTML = list.map((g, i) => {
-        const url = `https://${USER.toLowerCase()}.github.io/${encodeURIComponent(g.name)}/`;
+      const hint = usingFallback
+        ? `<p class="hint" style="grid-column:1/-1">Aucun dépôt n’a encore le topic <code>${esc(TOPIC)}</code> : tous les dépôts avec GitHub Pages sont affichés. Ajoute ce topic à tes jeux pour ne garder que eux.</p>`
+        : "";
+
+      grid.innerHTML = hint + list.map((g, i) => {
+        const url = gameUrl(g);
         const title = prettify(g.name);
+        const isNew = daysSince(g.pushed_at) <= NEW_DAYS;
+        const tags = (g.topics || []).filter(t => t !== TOPIC).slice(0, 4);
         return `
           <article class="card" style="--h:${hueOf(g.name)}; --i:${Math.min(i, 8)}">
-            <div class="banner" aria-hidden="true"><span>${esc(title.charAt(0))}</span></div>
+            <div class="banner" aria-hidden="true">
+              ${isNew ? `<span class="badge">Nouveau</span>` : ""}
+              <span>${esc(title.charAt(0))}</span>
+              <img src="${esc(url)}${esc(THUMB)}" alt="" loading="lazy" decoding="async">
+            </div>
             <div class="body">
               <h2>${esc(title)}</h2>
               ${g.description ? `<p>${esc(g.description)}</p>` : `<p class="empty">Pas encore de description.</p>`}
+              ${tags.length ? `<div class="tags">${tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
               <div class="foot">
-                <a class="play" href="${url}" aria-label="Jouer à ${esc(title)}"><span class="btn">Jouer</span></a>
+                <a class="play" href="${esc(url)}" aria-label="Jouer à ${esc(title)}"><span class="btn">Jouer</span></a>
                 <span>
                   <a class="repo" href="${esc(g.html_url)}" rel="noopener">Code</a>
                   · ${ago(g.pushed_at)}
@@ -417,27 +781,223 @@
       grid.setAttribute("aria-busy", "false");
     }
 
-    input.addEventListener("input", render);
+    function setGames(repos) {
+      games = pickGames(repos);
+      // Si le tag demandé n'existe plus, on l'ignore
+      if (activeTag && !games.some(g => (g.topics || []).includes(activeTag))) activeTag = null;
+      renderChips();
+      render();
+    }
+
+    /* ---------- Événements ---------- */
+    let timer;
+    input.addEventListener("input", () => {
+      render();
+      clearTimeout(timer);
+      timer = setTimeout(writeHash, 250);
+    });
 
     sortButtons.forEach(btn => btn.addEventListener("click", () => {
       sortMode = btn.dataset.sort;
       sortButtons.forEach(b => b.setAttribute("aria-pressed", String(b === btn)));
-      render();
+      render(); writeHash();
     }));
 
-    loadRepos()
-      .then(repos => {
-        games = repos.filter(r =>
-          !r.fork &&
-          r.name.toLowerCase() !== ROOT_REPO &&
-          (TOPIC ? (r.topics || []).includes(TOPIC) : r.has_pages)
-        );
-        render();
-      })
-      .catch(err => {
+    chipsEl.addEventListener("click", e => {
+      const chip = e.target.closest(".chip");
+      if (!chip) return;
+      activeTag = chip.dataset.tag || null;
+      chipsEl.querySelectorAll(".chip").forEach(c =>
+        c.setAttribute("aria-pressed", String((c.dataset.tag || "") === (activeTag || ""))));
+      render(); writeHash();
+    });
+
+    // Si la miniature n'existe pas, on la retire : la bannière générée reste visible
+    grid.addEventListener("error", e => {
+      if (e.target.tagName === "IMG") e.target.remove();
+    }, true);
+
+    // Raccourci : « / » met le focus sur la recherche, Échap l'efface
+    document.addEventListener("keydown", e => {
+      if (e.key === "/" && document.activeElement !== input && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault(); input.focus();
+      }
+    });
+    input.addEventListener("keydown", e => {
+      if (e.key === "Escape") { input.value = ""; render(); writeHash(); input.blur(); }
+    });
+
+    /* ---------- Démarrage : affichage immédiat depuis le cache, puis rafraîchissement ---------- */
+    async function init() {
+      readHash();
+      const cached = readCache();
+      const fresh = cached && Date.now() - cached.t < CACHE_MS;
+
+      if (cached) setGames(cached.data);
+      if (fresh) return;
+
+      try {
+        setGames(await fetchRepos());
+      } catch (err) {
+        if (cached) return; // on garde l'affichage du cache en cas d'échec
         countEl.textContent = "";
-        message("Impossible de charger les jeux", esc(err.message));
+        message("Impossible de charger les jeux", esc(err.message), true);
+      }
+    }
+
+    window.addEventListener("hashchange", () => { readHash(); renderChips(); render(); });
+    init();
+  </script>
+
+  <script>
+    /* ========== Fond animé de la bannière ========== */
+    (() => {
+      const hero = document.querySelector(".hero");
+      const cv = document.getElementById("heroCanvas");
+      if (!hero || !cv || !cv.getContext) return;
+
+      const ctx = cv.getContext("2d");
+      const reduceMq = matchMedia("(prefers-reduced-motion: reduce)");
+      const COLORS = ["#c8ff5c", "#ff5fa2", "#5ee7ff", "#b794ff", "#ffb86b"];
+      const rand = (a, b) => a + Math.random() * (b - a);
+
+      let w = 0, h = 0, shapes = [];
+      let px = 0, py = 0, tpx = 0, tpy = 0;       // parallaxe lissée (-1 à 1)
+      let mouse = { x: -999, y: -999 };
+      let raf = 0, visible = true;
+
+      function make() {
+        const d = rand(0.35, 1); // profondeur : petit et lent = loin, grand et rapide = près
+        return {
+          x: rand(0, w), y: rand(0, h),
+          s: 8 + d * 20, d,
+          vx: rand(-0.15, 0.15) * d,
+          vy: -rand(0.2, 0.6) * d,
+          rot: rand(0, Math.PI * 2),
+          vr: rand(-0.015, 0.015),
+          type: Math.floor(rand(0, 6)),
+          c: COLORS[Math.floor(rand(0, COLORS.length))],
+          a: rand(0.4, 0.9) * (0.5 + d / 2),
+          kx: 0, ky: 0 // décalage dû à la souris
+        };
+      }
+
+      function resize() {
+        const r = hero.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        w = r.width; h = r.height;
+        cv.width = Math.round(w * dpr);
+        cv.height = Math.round(h * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const n = Math.round(Math.min(48, Math.max(14, (w * h) / 9000)));
+        shapes = Array.from({ length: n }, make);
+        if (reduceMq.matches) draw();
+      }
+
+      function drawShape(s) {
+        ctx.save();
+        ctx.translate(s.x + s.kx + px * s.d * 26, s.y + s.ky + py * s.d * 18);
+        ctx.rotate(s.rot);
+        ctx.globalAlpha = s.a;
+        ctx.strokeStyle = s.c;
+        ctx.fillStyle = s.c;
+        ctx.lineWidth = 1.5 + s.d * 1.5;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.shadowColor = s.c;
+        ctx.shadowBlur = 8 + s.d * 8;
+        const r = s.s / 2;
+        ctx.beginPath();
+        switch (s.type) {
+          case 0: ctx.fillRect(-r * 0.6, -r * 0.6, r * 1.2, r * 1.2); break;           // pixel plein
+          case 1: ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.stroke(); break;             // rond
+          case 2:                                                                     // triangle
+            ctx.moveTo(0, -r); ctx.lineTo(r * 0.9, r * 0.7); ctx.lineTo(-r * 0.9, r * 0.7);
+            ctx.closePath(); ctx.stroke(); break;
+          case 3:                                                                     // croix
+            ctx.moveTo(-r * 0.8, -r * 0.8); ctx.lineTo(r * 0.8, r * 0.8);
+            ctx.moveTo(r * 0.8, -r * 0.8); ctx.lineTo(-r * 0.8, r * 0.8);
+            ctx.stroke(); break;
+          case 4: ctx.strokeRect(-r * 0.8, -r * 0.8, r * 1.6, r * 1.6); break;        // carré
+          default: ctx.arc(0, 0, 1.5 + s.d * 2, 0, Math.PI * 2); ctx.fill();         // étincelle
+        }
+        ctx.restore();
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        for (const s of shapes) drawShape(s);
+      }
+
+      function step() {
+        px += (tpx - px) * 0.06;
+        py += (tpy - py) * 0.06;
+
+        for (const s of shapes) {
+          s.x += s.vx; s.y += s.vy; s.rot += s.vr;
+
+          // La souris repousse doucement les formes proches
+          const dx = s.x + px * s.d * 26 - mouse.x;
+          const dy = s.y + py * s.d * 18 - mouse.y;
+          const dist2 = dx * dx + dy * dy;
+          if (dist2 < 14000) {
+            const f = (1 - dist2 / 14000) * 1.6 * s.d;
+            const dist = Math.sqrt(dist2) || 1;
+            s.kx += (dx / dist) * f;
+            s.ky += (dy / dist) * f;
+          }
+          s.kx *= 0.94; s.ky *= 0.94;
+
+          // Les formes qui sortent reviennent de l'autre côté
+          const m = s.s + 20;
+          if (s.y < -m) { s.y = h + m; s.x = rand(0, w); }
+          if (s.x < -m) s.x = w + m;
+          if (s.x > w + m) s.x = -m;
+        }
+        draw();
+      }
+
+      function loop() {
+        step();
+        raf = requestAnimationFrame(loop);
+      }
+
+      function start() {
+        if (raf || reduceMq.matches || !visible || document.hidden) return;
+        raf = requestAnimationFrame(loop);
+      }
+
+      function stop() { cancelAnimationFrame(raf); raf = 0; }
+
+      hero.addEventListener("pointermove", e => {
+        const r = hero.getBoundingClientRect();
+        mouse.x = e.clientX - r.left;
+        mouse.y = e.clientY - r.top;
+        tpx = (mouse.x / r.width - 0.5) * 2;
+        tpy = (mouse.y / r.height - 0.5) * 2;
       });
+
+      hero.addEventListener("pointerleave", () => {
+        mouse.x = mouse.y = -999;
+        tpx = tpy = 0;
+      });
+
+      // On ne dessine que quand la bannière est visible et l'onglet actif
+      new IntersectionObserver(entries => {
+        visible = entries[0].isIntersecting;
+        visible ? start() : stop();
+      }).observe(hero);
+
+      document.addEventListener("visibilitychange", () => document.hidden ? stop() : start());
+
+      reduceMq.addEventListener("change", () => {
+        if (reduceMq.matches) { stop(); draw(); } else start();
+      });
+
+      new ResizeObserver(resize).observe(hero);
+      resize();
+      start();
+    })();
   </script>
 </body>
 </html>
