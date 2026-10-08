@@ -389,6 +389,9 @@
 
     .card:hover .banner img { transform: scale(1.06); }
 
+    /* Capture en cours de génération : on laisse voir la bannière dessous */
+    .banner img.pending { opacity: 0; }
+
     .banner span.badge {
       position: absolute; top: .85rem; left: .85rem; z-index: 2;
       font-family: var(--body);
@@ -594,8 +597,12 @@
     // Mets null pour toujours afficher tous les dépôts avec GitHub Pages.
     const TOPIC = "mini-jeu";
     // Nom du fichier miniature cherché à la racine de chaque jeu (optionnel).
-    // Ajoute un fichier thumbnail.png dans un jeu pour remplacer la bannière générée.
+    // Ajoute un fichier thumbnail.png dans un jeu pour choisir toi-même son image.
     const THUMB = "thumbnail.png";
+    // Sans thumbnail.png, on affiche une capture d'écran automatique du jeu en ligne.
+    // Mets false pour garder la bannière avec la lettre à la place.
+    const AUTO_SCREENSHOT = true;
+    const SHOT_W = 640, SHOT_H = 400;
     // Un jeu modifié depuis moins de N jours reçoit le badge « Nouveau ».
     const NEW_DAYS = 14;
     /* ============================== */
@@ -762,7 +769,7 @@
             <div class="banner" aria-hidden="true">
               ${isNew ? `<span class="badge">Nouveau</span>` : ""}
               <span>${esc(title.charAt(0))}</span>
-              <img src="${esc(url)}${esc(THUMB)}" alt="" loading="lazy" decoding="async">
+              <img src="${esc(url)}${esc(THUMB)}" data-page="${esc(url)}" alt="" loading="lazy" decoding="async">
             </div>
             <div class="body">
               <h2>${esc(title)}</h2>
@@ -812,9 +819,36 @@
       render(); writeHash();
     });
 
-    // Si la miniature n'existe pas, on la retire : la bannière générée reste visible
+    /* ---------- Images des jeux ----------
+       1. thumbnail.png à la racine du jeu, s'il existe
+       2. sinon, capture d'écran automatique de la page du jeu (service mShots de WordPress)
+       3. sinon, la bannière avec la lettre reste visible */
+    const shotUrl = (page, n) =>
+      `https://s.wordpress.com/mshots/v1/${encodeURIComponent(page)}?w=${SHOT_W}&h=${SHOT_H}` + (n ? `&r=${n}` : "");
+
     grid.addEventListener("error", e => {
-      if (e.target.tagName === "IMG") e.target.remove();
+      const img = e.target;
+      if (img.tagName !== "IMG") return;
+      if (AUTO_SCREENSHOT && !img.dataset.shot && img.dataset.page) {
+        img.dataset.shot = "0";
+        img.classList.add("pending");
+        img.src = shotUrl(img.dataset.page, 0);
+      } else {
+        img.remove();
+      }
+    }, true);
+
+    // La première fois, mShots renvoie une image « en cours de génération » :
+    // on la reconnaît à sa taille et on réessaie quelques secondes plus tard.
+    grid.addEventListener("load", e => {
+      const img = e.target;
+      if (img.tagName !== "IMG" || img.dataset.shot == null) return;
+      if (img.naturalWidth === SHOT_W) { img.classList.remove("pending"); return; }
+      const n = Number(img.dataset.shot) + 1;
+      img.classList.add("pending");
+      if (n > 4) { img.remove(); return; }
+      img.dataset.shot = String(n);
+      setTimeout(() => { if (img.isConnected) img.src = shotUrl(img.dataset.page, n); }, 3000 * n);
     }, true);
 
     // Raccourci : « / » met le focus sur la recherche, Échap l'efface
